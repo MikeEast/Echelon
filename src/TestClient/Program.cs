@@ -22,7 +22,7 @@ namespace TestClient
                 var queues = qb.GetMessageQueues();
                 foreach (var queue in queues)
                 {
-                    Console.WriteLine(queue.Name + " has " + queue.Messages.Count());
+                    Console.WriteLine(queue.QueueName + " has " + queue.MessageCount);
                 }
             }
 

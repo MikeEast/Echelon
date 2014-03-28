@@ -1,80 +1,53 @@
-﻿@model Echelon.Web.Models.LoginModel
-@{
-    ViewBag.Title = "My Todo List";
-}
-@functions{
-    public string GetAntiForgeryToken()
-    {
-        string cookieToken, formToken;
-        AntiForgery.GetTokens(null, out cookieToken, out formToken);
-        return cookieToken + ":" + formToken;                
-    }
+﻿@{
+    
 }
 
-<header>
-    <h1>@ViewBag.Title</h1>
-</header>
-
-<div id="main-content">
-@if (@User.Identity.IsAuthenticated)
-{
-    <p class="error" data-bind="text: error"></p>
-    <input id="antiForgeryToken" type="hidden" value="@GetAntiForgeryToken()" />
-    <button data-bind="click: addTodoList">Add Todo list</button>
-
-    <section id="lists" data-bind="foreach: todoLists, visible: todoLists().length > 0">
-        <article class="todoList">
-            <header>
-                <form data-bind="validate: true">
-                    <input class="required" data-bind="value: title, selected: isEditingListTitle, blurOnEnter: true" />
-                </form>
-            </header>
-
-            <a href="#" class="deletelist" data-bind="click: $parent.deleteTodoList">X</a>
-
-            <ul data-bind="foreach: todos">
-                <li>
-                    <input type="checkbox" data-bind="checked: isDone" />
-                    <input class="todoItemInput" type="text" data-bind="value: title, disable: isDone, blurOnEnter: true" />
-                    <a href="#" data-bind="click: $parent.deleteTodo">X</a>
-                    <p class="error" data-bind="visible: errorMessage, text: errorMessage"></p>
-                </li>
-            </ul>
-
-            <form data-bind="submit: addTodo">
-                <input class="addTodo" type="text" data-bind="value: newTodoTitle, placeholder: 'Type here to add', blurOnEnter: true, event: { blur: addTodo }" />
-            </form>
-
-            <p class="error" data-bind="visible: errorMessage, text: errorMessage"></p>
-        </article>
-    </section>
-}
-else
-{
-    <div class="todoList" id="loginPanel">
-        <section id="localLoginPanel">
-            <h2>Log in</h2>
-            @Html.Partial("_Login")
-        </section>
-        <section id="socialLoginPanel">
-            <h2>Log in using another service</h2>
-            @Html.Action("ExternalLoginsList", "Account", new { ReturnUrl = ViewBag.ReturnUrl })
-        </section>
-        <p>First time here? <a id="showRegister">Sign up</a></p>
+<div class="row" ng-controller="QueueController">
+    <div class="col-md-2">
+        <ul ng-repeat="computer in computers" class="list-unstyled">
+            <li><a href="Javascript:void(0)" ng-click="selectComputer(computer)">{{ computer }}</a></li>
+        </ul>
     </div>
-    <div class="todoList" id="registerPanel">
-        <h2>Sign up</h2>
-        @Html.Partial("_Register")
-        <p>Already signed up? <a id="showLogin">Log in</a></p>
+    <div class="col-md-10">
+        <h5>{{selectedComputer}}</h5>
+        <div style="height: 200px; overflow-y: scroll;" ng-show="queues.length">
+            <table class="table table-bordered table-hover table-condensed">
+                <thead>
+                    <tr>
+                        <td>name</td>
+                        <td>count</td>
+                        <td>journal count</td>
+                    </tr>
+                </thead>
+                <tbody ng-repeat="queue in queues">
+                    <tr ng-click="viewMessages(selectedComputer, queue.displayName)">
+                        <td>{{ queue.displayName}}</td>
+                        <td>{{ queue.messageCount}}</td>
+                        <td>{{ queue.journalQueueMessageCount}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div style="height: 200px; overflow-y: scroll;" ng-show="messages.length">
+            <table class="table table-bordered table-hover table-condensed">
+                <thead>
+                    <tr>
+                        <td>label</td>
+                        <td>sent time</td>
+                        <td>id</td>
+                    </tr>
+                </thead>
+                <tbody ng-repeat="message in messages">
+                    <tr ng-click="viewMessage(selectedComputer, selectedQueue, message.id)">
+                        <td>{{ message.label}}</td>
+                        <td>{{ message.sentTime}}</td>
+                        <td>{{ message.id}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div style="height: 200px; overflow-y: scroll;" ng-show="messages.length">
+            {{ selectedMessage }}
+        </div>
     </div>
-}
 </div>
-
-@if (@User.Identity.IsAuthenticated)
-{
-    @section scripts {
-        @Scripts.Render("~/bundles/knockout")
-        @Scripts.Render("~/bundles/jqueryval")
-        @Scripts.Render("~/bundles/todo")
-    }
-}

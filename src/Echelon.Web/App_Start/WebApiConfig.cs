@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using Microsoft.Ajax.Utilities;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 namespace Echelon.Web
@@ -26,7 +28,12 @@ namespace Echelon.Web
             config.EnableSystemDiagnosticsTracing();
 
             // Use camel case for JSON data.
-            config.Formatters.JsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+
+            config.Formatters.JsonFormatter.SerializerSettings = new JsonSerializerSettings
+            { 
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                
+            };
         }
     }
 }
